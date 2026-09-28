@@ -38,13 +38,6 @@
                             {{-- El usuario autenticado puede enviar su solicitud. --}}
                             <form action="{{ route('courses.enroll', $course) }}" method="POST">
                                 @csrf
-                                <label for="schedule-{{ $course->id }}">Selecciona el horario</label>
-                                <select id="schedule-{{ $course->id }}" name="schedule" class="form-select mb-2" required>
-                                    <option value="">Elegir horario</option>
-                                    <option value="mañana">Jornada mañana</option>
-                                    <option value="tarde">Jornada tarde</option>
-                                    <option value="noche">Jornada noche</option>
-                                </select>
                                 <button class="btn btn-outline-sena" type="submit">Confirmar inscripción</button>
                             </form>
                             @else

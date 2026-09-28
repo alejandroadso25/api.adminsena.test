@@ -24,15 +24,18 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Limita la API a 60 solicitudes por minuto por usuario autenticado o dirección IP.
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
         $this->routes(function () {
-            Route::middleware(['api', 'throttle:api'])
+            // Carga las rutas API desde routes/api.php con el prefijo /v1.
+            Route::middleware('api')
                 ->prefix('v1')
                 ->group(base_path('routes/api.php'));
 
+            // Carga las rutas web con el middleware correspondiente a sesiones y vistas.
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });

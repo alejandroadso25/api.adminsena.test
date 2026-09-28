@@ -9,8 +9,8 @@ class Enrollment extends Model
 {
     use HasFactory;
 
-    // Campos permitidos para crear una inscripción con su horario.
-    protected $fillable = ['user_id', 'course_id', 'schedule', 'status'];
+    // Campos permitidos para crear una inscripción.
+    protected $fillable = ['user_id', 'course_id', 'status'];
 
     // Usuario que envió la inscripción.
     public function user()

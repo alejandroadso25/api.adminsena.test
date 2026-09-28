@@ -16,11 +16,6 @@ class EnrollmentController extends Controller
         // auth garantiza que solo una cuenta pueda enviar esta solicitud.
         $user = $request->user();
 
-        // Valida el horario elegido antes de confirmar la inscripción.
-        $data = $request->validate([
-            'schedule' => ['required', 'string', 'in:mañana,tarde,noche'],
-        ]);
-
         // Mantiene cerradas las convocatorias pares aunque se intente usar la ruta directamente.
         $programs = [
             'ADSO', 'Sistemas', 'Animación 3D', 'Mecatrónica', 'Barismo',
@@ -42,7 +37,6 @@ class EnrollmentController extends Controller
         Enrollment::create([
             'user_id' => $user->id,
             'course_id' => $course->id,
-            'schedule' => $data['schedule'],
             'status' => 'pendiente',
         ]);
 

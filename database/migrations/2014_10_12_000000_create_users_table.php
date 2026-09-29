@@ -37,8 +37,8 @@ return new class extends Migration
             // Contraseña almacenada como hash, nunca como texto plano.
             $table->string('password');
 
-            // Rol inicial; el usuario puede ser clasificado posteriormente.
-            $table->string('role')->default('aspirante')->index();
+            // Por ahora todas las cuentas usan el rol administrativo.
+            $table->string('role')->default('admin')->index();
 
             // Token opcional para conservar la sesión con la opción "recordarme".
             $table->rememberToken();

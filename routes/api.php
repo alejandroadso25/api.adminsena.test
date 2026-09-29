@@ -8,20 +8,25 @@ Route::get('/health', [ResourceController::class, 'health'])->name('api.health')
 
 // Endpoints REST según el recurso solicitado: computers, areas, courses, teachers, etc.
 
-// POST /v1/computers -> crea un nuevo computador.
-Route::post('/computers', [ResourceController::class, 'storeComputer'])->name('api.computers.store');
+// Las rutas del API quedan públicas durante esta etapa de consultas GET.
+Route::post('/computers', [ResourceController::class, 'storeComputer'])
+	->name('api.computers.store');
 
 // GET /v1/computers -> devuelve la lista de computadores.
-Route::get('/computers', [ResourceController::class, 'computers'])->name('api.computers');
+Route::get('/computers', [ResourceController::class, 'computers'])
+	->name('api.computers');
 
 // GET /v1/computers/{computer} -> devuelve un computador específico.
-Route::get('/computers/{computer}', [ResourceController::class, 'showComputer'])->name('api.computers.show');
+Route::get('/computers/{computer}', [ResourceController::class, 'showComputer'])
+	->name('api.computers.show');
 
 // PUT /v1/computers/{computer} -> actualiza un computador específico.
-Route::put('/computers/{computer}', [ResourceController::class, 'updateComputer'])->name('api.computers.update');
+Route::put('/computers/{computer}', [ResourceController::class, 'updateComputer'])
+	->name('api.computers.update');
 
 // DELETE /v1/computers/{computer} -> elimina un computador específico.
-Route::delete('/computers/{computer}', [ResourceController::class, 'destroyComputer'])->name('api.computers.destroy');
+Route::delete('/computers/{computer}', [ResourceController::class, 'destroyComputer'])
+	->name('api.computers.destroy');
 
 // POST /v1/areas -> crea una nueva área.
 Route::post('/areas', [ResourceController::class, 'storeArea'])->name('api.areas.store');

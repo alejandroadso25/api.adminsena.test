@@ -16,9 +16,8 @@
                 <span class="gov-mark">✦</span><span>sena.edu.co</span>
             </div>
         </div>
-        @auth
-            {{-- El navbar completo solo se renderiza cuando hay una sesión activa. --}}
-            <nav class="navbar navbar-light bg-white py-0" aria-label="Navegación principal">
+        {{-- El menú se abre con el botón hamburguesa y está disponible sin iniciar sesión. --}}
+        <nav class="navbar navbar-light bg-white py-0" aria-label="Navegación principal">
             <div class="container main-nav">
                 <a class="navbar-brand sena-brand" href="{{ url('/') }}" aria-label="AdminSena inicio">
                     <span class="sena-logo" role="img" aria-label="Logo SENA"></span><span class="sena-word">AdminSena</span>
@@ -28,18 +27,6 @@
                 </button>
                 <div class="d-flex align-items-center gap-2 ms-auto auth-nav navbar-auth">
                     @auth
-                        {{-- Selector de rol público disponible para el usuario autenticado.
-                             Se mantienen únicamente las dos opciones de la lógica de negocio:
-                             aspirante para inscripción y aprendiz para etapa ya admitida. --}}
-                        <form action="{{ route('user.role.update') }}" method="POST" class="d-flex align-items-center gap-2">
-                            @csrf
-                            @method('PATCH')
-                            <label for="home-role" class="visually-hidden">Seleccionar rol</label>
-                            <select id="home-role" name="role" class="form-select form-select-sm" onchange="this.form.submit()">
-                                <option value="aspirante" @selected(auth()->user()->role === 'aspirante')>Aspirante</option>
-                                <option value="aprendiz" @selected(auth()->user()->role === 'aprendiz')>Aprendiz</option>
-                            </select>
-                        </form>
                         <span class="nav-link">{{ auth()->user()->name }}</span>
                         <form action="{{ route('auth.logout') }}" method="POST" class="m-0">
                             @csrf
@@ -51,25 +38,17 @@
                 </div>
                 <div class="collapse navbar-collapse" id="homeNav">
                     <ul class="navbar-nav ms-lg-4 align-items-lg-center">
-                        @auth
-                            {{-- Los enlaces de registros solo se muestran a usuarios autenticados. --}}
-                            <li class="nav-item"><a class="nav-link" href="{{ route('areas.index') }}">Áreas</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('training-centers.index') }}">Centros de Formación</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('computers.index') }}">Computadores</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('courses.index') }}">Cursos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route('teachers.index') }}">Instructores</a></li>
-                        @endauth
+                        <li class="nav-item"><a class="nav-link" href="{{ route('areas.index') }}">Áreas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('training-centers.index') }}">Centros de Formación</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('computers.index') }}">Computadores</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('courses.index') }}">Cursos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('teachers.index') }}">Instructores</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('apprentices.index') }}">Aprendices</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('course-teachers.index') }}">Curso - Instructores</a></li>
                     </ul>
                 </div>
             </div>
-            </nav>
-        @endauth
-        @guest
-            {{-- El acceso a login permanece visible sin mostrar el navbar administrativo. --}}
-            <div class="container d-flex justify-content-end auth-nav navbar-auth guest-auth-nav">
-                <a class="nav-link" href="{{ route('auth.access') }}#login">Inicio / Registro</a>
-            </div>
-        @endguest
+        </nav>
     </header>
 
     {{-- Contenido principal: carrusel y tarjetas de acceso a los CRUD. --}}

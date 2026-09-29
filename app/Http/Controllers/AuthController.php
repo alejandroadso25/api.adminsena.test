@@ -50,8 +50,8 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:7', 'confirmed'],
         ]);
 
-        // El registro público empieza como usuario básico; luego puede avanzar a aspirante o aprendiz.
-        $data['role'] = User::ROLE_USUARIO;
+        // Por ahora todas las cuentas registradas gestionan el aplicativo.
+        $data['role'] = User::ROLE_ADMIN;
 
         // El modelo User aplica el hash configurado para la contraseña.
         User::create($data);
@@ -59,31 +59,6 @@ class AuthController extends Controller
         // Informa el resultado y envía al formulario de inicio de sesión.
         return redirect()->route('auth.access')
             ->with('status', 'Registro exitoso. Ahora puedes iniciar sesión.');
-    }
-
-    /**
-     * Actualiza el rol público elegido por el usuario desde el home.
-     * En la parte pública del sistema solo se aceptan aspirante y aprendiz.
-     */
-    public function updateRole(Request $request)
-    {
-        // Solo se aceptan los roles que representan la identidad pública del usuario.
-        $data = $request->validate([
-            'role' => ['required', 'string', 'in:aspirante,aprendiz'],
-        ]);
-
-        // El administrador no puede activarse desde esta pantalla pública.
-        $allowedRoles = [User::ROLE_ASPIRANTE, User::ROLE_APRENDIZ];
-
-        if (! in_array($data['role'], $allowedRoles, true)) {
-            abort(403, 'Rol no permitido para esta actualización.');
-        }
-
-        // Guarda el rol seleccionado en la cuenta autenticada.
-        $request->user()->update(['role' => $data['role']]);
-
-        // Regresa al home mostrando el resultado de la actualización.
-        return redirect()->route('home')->with('status', 'Rol actualizado correctamente.');
     }
 
     /**

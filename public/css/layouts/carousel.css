@@ -1,0 +1,186 @@
+/* Estilos del carrusel independiente de librerías de interfaz. */
+.hero-carousel {
+    min-height: 34rem;
+    position: relative;
+    overflow: hidden;
+    background: #082f49;
+}
+
+/* Las diapositivas se apilan para permitir la transición sin mover el contenido. */
+.carousel-slides {
+    position: absolute;
+    inset: 0;
+}
+
+.carousel-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    background-position: center;
+    background-size: cover;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.65s ease, visibility 0.65s ease;
+}
+
+/* La capa de color mejora la lectura del texto sobre las fotografías. */
+.carousel-slide::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(90deg, rgba(2, 42, 58, 0.92), rgba(3, 68, 69, 0.58) 58%, rgba(37, 99, 235, 0.2));
+}
+
+.carousel-slide.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Cada modificador asigna la imagen de fondo de su diapositiva. */
+.carousel-slide--one {
+    background-image: url('http://api.adminsena.test/storage/images/apren1.jpg');
+}
+
+.carousel-slide--two {
+    background-image: url('http://api.adminsena.test/storage/images/apren2.jpg');
+}
+
+.carousel-slide--three {
+    background-image: url('http://api.adminsena.test/storage/images/aprendi3.jpg');
+}
+
+.carousel-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-width: 0;
+    padding-top: 5rem;
+    padding-bottom: 6rem;
+    color: #fff;
+}
+
+/* El ancho propio centra el texto y reserva espacio para controles laterales. */
+.carousel-container {
+    width: min(100% - 2.5rem, 1280px);
+    max-width: 1280px;
+    margin-inline: auto;
+}
+
+.carousel-content .eyebrow {
+    color: #bfdbfe;
+}
+
+/* Los titulares grandes identifican cada mensaje principal del carrusel. */
+.carousel-content h1,
+.carousel-content h2 {
+    max-width: 48rem;
+    margin: 0 0 1rem;
+    color: #fff;
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 700;
+    line-height: 0.98;
+    text-transform: uppercase;
+}
+
+.carousel-content > p:last-child {
+    max-width: 34rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 1.1rem;
+    line-height: 1.65;
+}
+
+/* Los controles laterales mantienen un área de interacción estable y visible. */
+.carousel-control {
+    position: absolute;
+    z-index: 2;
+    top: calc(50% - 22px);
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+    background: rgba(8, 47, 73, 0.45);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.35rem;
+    transition: background-color 0.2s ease;
+}
+
+.carousel-control:hover,
+.carousel-control:focus-visible {
+    background: #1d4ed8;
+}
+
+.carousel-control--previous {
+    left: 1.5rem;
+}
+
+.carousel-control--next {
+    right: 1.5rem;
+}
+
+/* Los indicadores permiten saltar a una diapositiva y señalan la activa. */
+.carousel-indicators {
+    position: absolute;
+    z-index: 2;
+    bottom: 1.5rem;
+    left: 50%;
+    display: flex;
+    gap: 0.55rem;
+    transform: translateX(-50%);
+}
+
+.carousel-indicators button {
+    width: 2.2rem;
+    height: 0.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.carousel-indicators button.is-active {
+    background: #fff;
+}
+
+/* En tablet se reduce la altura del hero y se acercan los controles al borde. */
+@media (max-width: 760px) {
+    .hero-carousel {
+        min-height: 30rem;
+    }
+
+    .carousel-content {
+        padding-top: 4rem;
+        padding-bottom: 5rem;
+    }
+
+    .carousel-content h1,
+    .carousel-content h2 {
+        font-size: clamp(2.5rem, 12vw, 4rem);
+    }
+
+    .carousel-control--previous {
+        left: 0.75rem;
+    }
+
+    .carousel-control--next {
+        right: 0.75rem;
+    }
+}
+
+/* En móviles estrechos se reserva ancho para el texto y se limita el titular. */
+@media (max-width: 720px) {
+    .carousel-content {
+        padding: 4rem 2rem 5rem;
+    }
+
+    .carousel-content h1,
+    .carousel-content h2 {
+        font-size: 2.25rem;
+    }
+}

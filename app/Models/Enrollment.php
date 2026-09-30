@@ -18,7 +18,7 @@ class Enrollment extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Curso seleccionado como oferta.
+    // Curso seleccionado para la inscripción.
     public function course()
     {
         return $this->belongsTo(Course::class);

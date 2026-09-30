@@ -1,0 +1,81 @@
+/* Estructura y tipografía exclusivas de la página de inicio. */
+/* Mantiene las secciones alineadas sin usar clases de frameworks externos. */
+.home-container {
+    width: min(100% - 2.5rem, 1280px);
+    margin-inline: auto;
+}
+
+.home-news-section {
+    padding-top: 3.5rem;
+    padding-bottom: 4rem;
+}
+
+.home-section-header {
+    margin-bottom: 1.5rem;
+}
+
+/* Da jerarquía visual a las etiquetas de sección y categoría. */
+.home-section-header .section-tag,
+.home-news-card .news-label {
+    color: var(--sena-green);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.home-section-header h2 {
+    margin: 0.4rem 0 0;
+    color: var(--sena-dark);
+    font-size: 1.8rem;
+}
+
+/* Ajusta el título de cada noticia para mantener una lectura uniforme. */
+.home-news-card h3 {
+    margin: 0.8rem 0;
+    color: var(--sena-dark);
+    font-size: 1.2rem;
+}
+
+.home-news-card a,
+.home-primary-link {
+    color: var(--sena-blue-dark);
+    font-weight: 800;
+}
+
+/* Separa el bloque editorial final de las noticias y limita su ancho de lectura. */
+.home-story-teaser {
+    margin-bottom: 4rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-top: 1px solid #cbd9df;
+}
+
+.home-story-teaser h2 {
+    max-width: 42rem;
+    margin: 0 0 0.75rem;
+    color: var(--sena-dark);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.home-story-teaser > p:not(.eyebrow) {
+    max-width: 48rem;
+    margin: 0 0 1.5rem;
+    color: var(--sena-muted);
+    line-height: 1.7;
+}
+
+/* El CTA usa un color sólido para conservar contraste sobre el fondo claro. */
+.home-primary-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border-radius: 4px;
+    background: var(--sena-green);
+    color: #fff !important;
+}
+
+.home-primary-link:hover,
+.home-primary-link:focus-visible {
+    background: #0d665d;
+}

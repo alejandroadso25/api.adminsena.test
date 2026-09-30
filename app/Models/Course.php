@@ -12,21 +12,20 @@ class Course extends Model
     // Incluye las claves foráneas usadas por los selectores de los formularios.
     protected $fillable = [
         'course_number',
-        'program_name',
         'day',
+        'area_id',
+        'training_center_id'
+    ];
+
+    // Oculta columnas antiguas de ofertas que pueden seguir en bases ya migradas.
+    protected $hidden = [
+        'program_name',
         'training_type',
         'location',
         'is_open',
         'description',
         'duration',
         'capacity',
-        'area_id',
-        'training_center_id'
-    ];
-
-    protected $casts = [
-        // Convierte el estado de la convocatoria a booleano.
-        'is_open' => 'boolean',
     ];
 
     public function area()
@@ -57,6 +56,12 @@ class Course extends Model
     public function enrollments()
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    // Un curso base puede tener varias convocatorias.
+    public function offerCourses()
+    {
+        return $this->hasMany(OfferCourse::class);
     }
 
     /**

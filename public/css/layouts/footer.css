@@ -1,0 +1,74 @@
+/* El footer se comparte entre las páginas públicas y los listados. */
+.site-footer {
+    padding: 3rem 0 1rem;
+    background: #073b4c;
+    color: #fff;
+}
+
+/* Organiza los datos institucionales en columnas que se apilan en móvil. */
+.footer-grid {
+    display: grid;
+    max-width: 1200px;
+    gap: 2rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.site-footer h2,
+.site-footer h3 {
+    margin-top: 0;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.site-footer p {
+    color: #c9d9dc;
+    font-size: 0.82rem;
+}
+
+.site-footer a {
+    color: #bfdbfe;
+}
+
+/* Destaca el enlace principal del bloque institucional. */
+.footer-grid > div:first-child > a {
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+/* Agrupa los accesos sociales en botones del mismo tamaño. */
+.footer-socials {
+    display: flex;
+    gap: 0.65rem;
+}
+
+.footer-socials a {
+    display: flex;
+    width: 2.2rem;
+    height: 2.2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.footer-socials a:hover {
+    background: #2563eb;
+}
+
+.footer-bottom {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    color: #c9d9dc;
+    font-size: 0.72rem;
+}
+
+/* En pantallas estrechas, muestra cada bloque del footer en una fila. */
+@media (max-width: 720px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}

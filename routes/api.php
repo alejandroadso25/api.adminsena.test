@@ -8,7 +8,7 @@ Route::get('/health', [ResourceController::class, 'health'])->name('api.health')
 
 // Endpoints REST según el recurso solicitado: computers, areas, courses, teachers, etc.
 
-// Las rutas del API quedan públicas durante esta etapa de consultas GET.
+// Las rutas están públicas por ahora; agrega autenticación antes de exponerlas en producción.
 Route::post('/computers', [ResourceController::class, 'storeComputer'])
 	->name('api.computers.store');
 
@@ -57,6 +57,14 @@ Route::put('/courses/{course}', [ResourceController::class, 'updateCourse'])->na
 
 // DELETE /v1/courses/{course} -> elimina un curso específico.
 Route::delete('/courses/{course}', [ResourceController::class, 'destroyCourse'])->name('api.courses.destroy');
+
+// CRUD de convocatorias; todas las rutas quedan bajo el prefijo /v1.
+// POST crea, GET lista/consulta, PUT actualiza y DELETE elimina una oferta.
+Route::post('/offer-courses', [ResourceController::class, 'storeOfferCourse'])->name('api.offer_courses.store');
+Route::get('/offer-courses', [ResourceController::class, 'offerCourses'])->name('api.offer_courses');
+Route::get('/offer-courses/{offerCourse}', [ResourceController::class, 'showOfferCourse'])->name('api.offer_courses.show');
+Route::put('/offer-courses/{offerCourse}', [ResourceController::class, 'updateOfferCourse'])->name('api.offer_courses.update');
+Route::delete('/offer-courses/{offerCourse}', [ResourceController::class, 'destroyOfferCourse'])->name('api.offer_courses.destroy');
 
 // POST /v1/teachers -> crea un nuevo instructor.
 Route::post('/teachers', [ResourceController::class, 'storeTeacher'])->name('api.teachers.store');

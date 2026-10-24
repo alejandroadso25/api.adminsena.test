@@ -8,9 +8,7 @@ use App\Models\Area;
 use App\Models\Computer;
 use App\Models\Course;
 use App\Models\Course_Teacher;
-use App\Models\Enrollment;
 use App\Models\Image;
-use App\Models\OfferCourse;
 use App\Models\Teacher;
 use App\Models\Training_Center;
 use Illuminate\Http\Request;
@@ -220,76 +218,6 @@ class ResourceController extends Controller
         ]);
     }
 
-    /** Lista ofertas con el curso, área y centro asociados. */
-    public function offerCourses()
-    {
-        return response()->json(
-            OfferCourse::with(['course.area', 'course.trainingCenter'])->get()
-        );
-    }
-
-    /** Consulta una oferta por su identificador. */
-    public function showOfferCourse(OfferCourse $offerCourse)
-    {
-        return response()->json(
-            $offerCourse->load(['course.area', 'course.trainingCenter'])
-        );
-    }
-
-    /** Crea una oferta asociada a un curso existente. */
-    public function storeOfferCourse(Request $request)
-    {
-        $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'program_name' => 'required|string|max:255',
-            'training_type' => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
-            'is_open' => 'nullable|boolean',
-            'description' => 'nullable|string',
-            'duration' => 'nullable|string|max:255',
-            'capacity' => 'nullable|integer|min:0',
-        ]);
-
-        $offerCourse = OfferCourse::create($validated);
-
-        return response()->json([
-            'message' => 'Oferta creada correctamente.',
-            'data' => $offerCourse->load(['course.area', 'course.trainingCenter']),
-        ], 201);
-    }
-
-    /** Actualiza los datos de una oferta existente. */
-    public function updateOfferCourse(Request $request, OfferCourse $offerCourse)
-    {
-        $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'program_name' => 'required|string|max:255',
-            'training_type' => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
-            'is_open' => 'nullable|boolean',
-            'description' => 'nullable|string',
-            'duration' => 'nullable|string|max:255',
-            'capacity' => 'nullable|integer|min:0',
-        ]);
-
-        $offerCourse->update($validated);
-
-        return response()->json([
-            'message' => 'Oferta actualizada correctamente.',
-            'data' => $offerCourse->load(['course.area', 'course.trainingCenter']),
-        ]);
-    }
-
-    /** Elimina la oferta seleccionada. */
-    public function destroyOfferCourse(OfferCourse $offerCourse)
-    {
-        $offerCourse->delete();
-
-        return response()->json([
-            'message' => 'Oferta eliminada correctamente.',
-        ]);
-    }
-
     /**
      * Crea un nuevo instructor a partir de una petición POST.
      */
@@ -489,72 +417,6 @@ class ResourceController extends Controller
 
         return response()->json([
             'message' => 'Centro de formación eliminado correctamente.',
-        ]);
-    }
-
-    // Devuelve todas las inscripciones con el usuario y el curso relacionados.
-    public function enrollments()
-    {
-        return response()->json(
-            Enrollment::with(['user', 'course'])->get()
-        );
-    }
-
-    // Crea una inscripción y valida que el usuario y el curso existan.
-    public function storeEnrollment(Request $request)
-    {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'course_id' => 'required|exists:courses,id',
-            'status' => 'nullable|string|max:255',
-        ]);
-
-        $enrollment = Enrollment::create($validated);
-
-        return response()->json([
-            'message' => 'Inscripción creada correctamente.',
-            'data' => $enrollment->load(['user', 'course']),
-        ], 201);
-    }
-
-    // Devuelve una inscripción específica con sus relaciones.
-    public function showEnrollment(Enrollment $enrollment)
-    {
-        return response()->json(
-            $enrollment->load(['user', 'course'])
-        );
-    }
-
-    // Actualiza una inscripción sin permitir duplicar usuario y curso.
-    public function updateEnrollment(Request $request, Enrollment $enrollment)
-    {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'course_id' => [
-                'required',
-                'exists:courses,id',
-                Rule::unique('enrollments', 'course_id')
-                    ->where('user_id', $request->input('user_id'))
-                    ->ignore($enrollment->id),
-            ],
-            'status' => 'required|string|max:255',
-        ]);
-
-        $enrollment->update($validated);
-
-        return response()->json([
-            'message' => 'Inscripción actualizada correctamente.',
-            'data' => $enrollment->load(['user', 'course']),
-        ]);
-    }
-
-    // Elimina una inscripción existente.
-    public function destroyEnrollment(Enrollment $enrollment)
-    {
-        $enrollment->delete();
-
-        return response()->json([
-            'message' => 'Inscripción eliminada correctamente.',
         ]);
     }
 

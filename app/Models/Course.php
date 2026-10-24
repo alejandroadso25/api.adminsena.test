@@ -52,18 +52,6 @@ class Course extends Model
         return $this->belongsToMany(Teacher::class, 'course__teachers');
     }
 
-    // Inscripciones recibidas por este curso.
-    public function enrollments()
-    {
-        return $this->hasMany(Enrollment::class);
-    }
-
-    // Un curso base puede tener varias convocatorias.
-    public function offerCourses()
-    {
-        return $this->hasMany(OfferCourse::class);
-    }
-
     /**
      * Un curso puede tener varias imágenes asociadas.
      */

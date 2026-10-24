@@ -11,9 +11,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // Por ahora el sistema utiliza únicamente el rol administrativo.
-    public const ROLE_ADMIN = 'admin';
-
     /**
      * The attributes that are mass assignable.
      *
@@ -21,13 +18,8 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'last_name',
         'email',
-        'address',
-        'gender',
-        'phone',
         'password',
-        'role',
     ];
 
     /**
@@ -49,21 +41,5 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
-    // Inscripciones realizadas por el usuario.
-    public function enrollments()
-    {
-        return $this->hasMany(Enrollment::class);
-    }
-
-    /**
-    * Devuelve los roles que el sistema reconoce.
-     */
-    public static function availableRoles(): array
-    {
-        return [
-            self::ROLE_ADMIN,
-        ];
-    }
 
 }

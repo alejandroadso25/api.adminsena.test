@@ -16,36 +16,14 @@ use Illuminate\Validation\Rule;
 
 class ResourceController extends Controller
 {
-    /**
-     * Verifica que la API esté disponible.
-     */
-    public function health()
-    {
-        return response()->json([
-            'status' => 'ok',
-            'app' => config('app.name'),
-            'environment' => config('app.env'),
-        ]);
-    }
-
-    /**
-     * Crea un nuevo computador a partir de una petición POST.
-     *
-     * Ejemplo de payload esperado:
-     * {
-     *   "number": "PC-01",
-     *   "brand": "Dell"
-     * }
-     */
     public function storeComputer(Request $request)
     {
         $validated = $request->validate([
-            'number' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
+            'number' => 'required|integer',
+            'brand' => 'required|integer',
         ]);
 
         $computer = Computer::create($validated);
-
         return response()->json([
             'message' => 'Computador creado correctamente.',
             'data' => $computer,
@@ -72,8 +50,8 @@ class ResourceController extends Controller
     public function updateComputer(Request $request, Computer $computer)
     {
         $validated = $request->validate([
-            'number' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
+            'number' => 'required|integer',
+            'brand' => 'required|integer',
         ]);
 
         $computer->update($validated);
@@ -88,7 +66,6 @@ class ResourceController extends Controller
     public function destroyComputer(Computer $computer)
     {
         $computer->delete();
-
         return response()->json([
             'message' => 'Computador eliminado correctamente.',
         ]);
@@ -100,7 +77,7 @@ class ResourceController extends Controller
     public function storeArea(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
         ]);
 
         $area = Area::create($validated);
@@ -131,11 +108,10 @@ class ResourceController extends Controller
     public function updateArea(Request $request, Area $area)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
         ]);
 
         $area->update($validated);
-
         return response()->json([
             'message' => 'Área actualizada correctamente.',
             'data' => $area,
@@ -146,7 +122,6 @@ class ResourceController extends Controller
     public function destroyArea(Area $area)
     {
         $area->delete();
-
         return response()->json([
             'message' => 'Área eliminada correctamente.',
         ]);
@@ -158,17 +133,16 @@ class ResourceController extends Controller
     public function storeCourse(Request $request)
     {
         $validated = $request->validate([
-            'course_number' => 'required|string|max:255',
-            'day' => 'nullable|string|max:255',
-            'area_id' => 'nullable|exists:areas,id',
-            'training_center_id' => 'nullable|exists:training__centers,id',
+            'course_number' => 'required|integer',
+            'day' => 'required|string',
+            'area_id' => 'nullable|integer|exists:areas,id',
+            'training_center_id' => 'nullable|integer|exists:training__centers,id',
         ]);
 
         $course = Course::create($validated);
-
         return response()->json([
             'message' => 'Curso creado correctamente.',
-            'data' => $course,
+            'data' => $course->load(['area', 'trainingCenter', 'teachers', 'images']),
         ], 201);
     }
 
@@ -178,7 +152,7 @@ class ResourceController extends Controller
     public function courses()
     {
         return response()->json(
-            Course::with(['area', 'trainingCenter', 'images'])->get()
+            Course::with(['area', 'trainingCenter', 'teachers', 'images'])->get()
         );
     }
 
@@ -186,7 +160,7 @@ class ResourceController extends Controller
     public function showCourse(Course $course)
     {
         return response()->json(
-            $course->load(['area', 'trainingCenter', 'images'])
+            $course->load(['area', 'trainingCenter', 'teachers', 'images'])
         );
     }
 
@@ -194,17 +168,17 @@ class ResourceController extends Controller
     public function updateCourse(Request $request, Course $course)
     {
         $validated = $request->validate([
-            'course_number' => 'required|string|max:255',
-            'day' => 'nullable|string|max:255',
-            'area_id' => 'nullable|exists:areas,id',
-            'training_center_id' => 'nullable|exists:training__centers,id',
+            'course_number' => 'required|integer',
+            'day' => 'required|string',
+            'area_id' => 'nullable|integer|exists:areas,id',
+            'training_center_id' => 'nullable|integer|exists:training__centers,id',
         ]);
 
         $course->update($validated);
 
         return response()->json([
             'message' => 'Curso actualizado correctamente.',
-            'data' => $course->load(['area', 'trainingCenter', 'images']),
+            'data' => $course->load(['area', 'trainingCenter', 'teachers', 'images']),
         ]);
     }
 
@@ -212,7 +186,6 @@ class ResourceController extends Controller
     public function destroyCourse(Course $course)
     {
         $course->delete();
-
         return response()->json([
             'message' => 'Curso eliminado correctamente.',
         ]);
@@ -224,17 +197,17 @@ class ResourceController extends Controller
     public function storeTeacher(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
             'email' => 'required|email|unique:teachers,email',
-            'area_id' => 'nullable|exists:areas,id',
-            'training_center_id' => 'nullable|exists:training__centers,id',
+            'area_id' => 'nullable|integer|exists:areas,id',
+            'training_center_id' => 'nullable|integer|exists:training__centers,id',
         ]);
 
         $teacher = Teacher::create($validated);
 
         return response()->json([
             'message' => 'Instructor creado correctamente.',
-            'data' => $teacher,
+            'data' => $teacher->load(['area', 'trainingCenter', 'courses', 'image']),
         ], 201);
     }
 
@@ -244,7 +217,7 @@ class ResourceController extends Controller
     public function teachers()
     {
         return response()->json(
-            Teacher::with(['area', 'trainingCenter', 'image'])->get()
+            Teacher::with(['area', 'trainingCenter', 'courses', 'image'])->get()
         );
     }
 
@@ -252,7 +225,7 @@ class ResourceController extends Controller
     public function showTeacher(Teacher $teacher)
     {
         return response()->json(
-            $teacher->load(['area', 'trainingCenter', 'image'])
+            $teacher->load(['area', 'trainingCenter', 'courses', 'image'])
         );
     }
 
@@ -260,21 +233,21 @@ class ResourceController extends Controller
     public function updateTeacher(Request $request, Teacher $teacher)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
             'email' => [
                 'required',
                 'email',
                 Rule::unique('teachers', 'email')->ignore($teacher->id),
             ],
-            'area_id' => 'nullable|exists:areas,id',
-            'training_center_id' => 'nullable|exists:training__centers,id',
+            'area_id' => 'nullable|integer|exists:areas,id',
+            'training_center_id' => 'nullable|integer|exists:training__centers,id',
         ]);
 
         $teacher->update($validated);
 
         return response()->json([
             'message' => 'Instructor actualizado correctamente.',
-            'data' => $teacher->load(['area', 'trainingCenter', 'image']),
+            'data' => $teacher->load(['area', 'trainingCenter', 'courses', 'image']),
         ]);
     }
 
@@ -282,7 +255,6 @@ class ResourceController extends Controller
     public function destroyTeacher(Teacher $teacher)
     {
         $teacher->delete();
-
         return response()->json([
             'message' => 'Instructor eliminado correctamente.',
         ]);
@@ -294,11 +266,11 @@ class ResourceController extends Controller
     public function storeApprentice(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
             'email' => 'required|email|unique:apprentices,email',
-            'cell_number' => 'nullable|string|max:255',
-            'course_id' => 'required|exists:courses,id',
-            'computer_id' => 'nullable|exists:computers,id',
+            'cell_number' => 'required|string',
+            'course_id' => 'required|integer|exists:courses,id',
+            'computer_id' => 'nullable|integer|exists:computers,id',
         ]);
 
         $apprentice = Apprentice::create($validated);
@@ -331,19 +303,18 @@ class ResourceController extends Controller
     public function updateApprentice(Request $request, Apprentice $apprentice)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
             'email' => [
                 'required',
                 'email',
                 Rule::unique('apprentices', 'email')->ignore($apprentice->id),
             ],
-            'cell_number' => 'nullable|string|max:255',
-            'course_id' => 'required|exists:courses,id',
-            'computer_id' => 'nullable|exists:computers,id',
+            'cell_number' => 'required|string',
+            'course_id' => 'required|integer|exists:courses,id',
+            'computer_id' => 'nullable|integer|exists:computers,id',
         ]);
 
         $apprentice->update($validated);
-
         return response()->json([
             'message' => 'Aprendiz actualizado correctamente.',
             'data' => $apprentice->load(['course', 'computer', 'image']),
@@ -354,7 +325,6 @@ class ResourceController extends Controller
     public function destroyApprentice(Apprentice $apprentice)
     {
         $apprentice->delete();
-
         return response()->json([
             'message' => 'Aprendiz eliminado correctamente.',
         ]);
@@ -366,12 +336,11 @@ class ResourceController extends Controller
     public function storeTrainingCenter(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'location' => 'nullable|string|max:255',
+            'name' => 'required|string',
+            'location' => 'required|string',
         ]);
 
         $trainingCenter = Training_Center::create($validated);
-
         return response()->json([
             'message' => 'Centro de formación creado correctamente.',
             'data' => $trainingCenter,
@@ -398,12 +367,11 @@ class ResourceController extends Controller
     public function updateTrainingCenter(Request $request, Training_Center $trainingCenter)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'location' => 'nullable|string|max:255',
+            'name' => 'required|string',
+            'location' => 'required|string',
         ]);
 
         $trainingCenter->update($validated);
-
         return response()->json([
             'message' => 'Centro de formación actualizado correctamente.',
             'data' => $trainingCenter->load('image'),
@@ -414,7 +382,6 @@ class ResourceController extends Controller
     public function destroyTrainingCenter(Training_Center $trainingCenter)
     {
         $trainingCenter->delete();
-
         return response()->json([
             'message' => 'Centro de formación eliminado correctamente.',
         ]);
@@ -432,8 +399,14 @@ class ResourceController extends Controller
     public function storeCourseTeacher(Request $request)
     {
         $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'teacher_id' => 'required|exists:teachers,id',
+            'course_id' => 'required|integer|exists:courses,id',
+            'teacher_id' => [
+                'required',
+                'integer',
+                'exists:teachers,id',
+                Rule::unique('course__teachers', 'teacher_id')
+                    ->where('course_id', $request->input('course_id')),
+            ],
         ]);
 
         $courseTeacher = Course_Teacher::create($validated);
@@ -456,8 +429,15 @@ class ResourceController extends Controller
     public function updateCourseTeacher(Request $request, Course_Teacher $courseTeacher)
     {
         $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'teacher_id' => 'required|exists:teachers,id',
+            'course_id' => 'required|integer|exists:courses,id',
+            'teacher_id' => [
+                'required',
+                'integer',
+                'exists:teachers,id',
+                Rule::unique('course__teachers', 'teacher_id')
+                    ->where('course_id', $request->input('course_id'))
+                    ->ignore($courseTeacher->id),
+            ],
         ]);
 
         $courseTeacher->update($validated);
@@ -487,19 +467,16 @@ class ResourceController extends Controller
     // Registra los metadatos de una imagen almacenada previamente.
     public function storeImage(Request $request)
     {
-        $validated = $request->validate([
-            'imageable_id' => 'required|integer',
-            'imageable_type' => 'required|string|max:255',
-            'path' => 'required|string|max:255',
-            'file_name' => 'required|string|max:255',
-            'original_name' => 'nullable|string|max:255',
-            'alt_text' => 'nullable|string|max:255',
+        $validated = $this->validateImageOwner($request) + $request->validate([
+            'path' => 'required|string',
+            'file_name' => 'required|string',
+            'original_name' => 'nullable|string',
+            'alt_text' => 'nullable|string',
             'is_primary' => 'nullable|boolean',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
         $image = Image::create($validated);
-
         return response()->json([
             'message' => 'Imagen registrada correctamente.',
             'data' => $image,
@@ -515,19 +492,16 @@ class ResourceController extends Controller
     // Actualiza los metadatos de una imagen existente.
     public function updateImage(Request $request, Image $image)
     {
-        $validated = $request->validate([
-            'imageable_id' => 'required|integer',
-            'imageable_type' => 'required|string|max:255',
-            'path' => 'required|string|max:255',
-            'file_name' => 'required|string|max:255',
-            'original_name' => 'nullable|string|max:255',
-            'alt_text' => 'nullable|string|max:255',
+        $validated = $this->validateImageOwner($request) + $request->validate([
+            'path' => 'required|string',
+            'file_name' => 'required|string',
+            'original_name' => 'nullable|string',
+            'alt_text' => 'nullable|string',
             'is_primary' => 'nullable|boolean',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
         $image->update($validated);
-
         return response()->json([
             'message' => 'Imagen actualizada correctamente.',
             'data' => $image,
@@ -545,17 +519,30 @@ class ResourceController extends Controller
     }
 
     /**
-     * Devuelve un resumen general basado en el contenido actual de la base de datos.
+     * Valida el tipo de entidad de la imagen y que su registro exista.
      */
-    public function summary()
+    private function validateImageOwner(Request $request): array
     {
-        return response()->json([
-            'areas' => Area::count(),
-            'computers' => Computer::count(),
-            'courses' => Course::count(),
-            'teachers' => Teacher::count(),
-            'apprentices' => Apprentice::count(),
-            'training_centers' => Training_Center::count(),
+        $imageableTables = [
+            Computer::class => 'computers',
+            Course::class => 'courses',
+            Teacher::class => 'teachers',
+            Apprentice::class => 'apprentices',
+            Training_Center::class => 'training__centers',
+        ];
+
+        // Acepta únicamente los modelos incluidos en el mapa de entidades con imágenes.
+        $owner = $request->validate([
+            'imageable_type' => ['required', 'string', Rule::in(array_keys($imageableTables))],
+        ]);
+
+        // Comprueba que el ID exista en la tabla correspondiente al modelo validado.
+        return $owner + $request->validate([
+            'imageable_id' => [
+                'required',
+                'integer',
+                Rule::exists($imageableTables[$owner['imageable_type']], 'id'),
+            ],
         ]);
     }
 }

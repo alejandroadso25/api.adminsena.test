@@ -17,17 +17,6 @@ class Course extends Model
         'training_center_id'
     ];
 
-    // Oculta columnas antiguas de ofertas que pueden seguir en bases ya migradas.
-    protected $hidden = [
-        'program_name',
-        'training_type',
-        'location',
-        'is_open',
-        'description',
-        'duration',
-        'capacity',
-    ];
-
     public function area()
     {
         // Cada curso pertenece opcionalmente a un área.

@@ -3,12 +3,6 @@
 use App\Http\Controllers\Api\ResourceController;
 use Illuminate\Support\Facades\Route;
 
-// Verifica que la API esté disponible y responda correctamente.
-Route::get('/health', [ResourceController::class, 'health'])->name('api.health');
-
-// Endpoints REST según el recurso solicitado: computers, areas, courses, teachers, etc.
-
-// Las rutas están públicas por ahora; agrega autenticación antes de exponerlas en producción.
 Route::post('/computers', [ResourceController::class, 'storeComputer'])
 	->name('api.computers.store');
 
@@ -132,6 +126,3 @@ Route::put('/images/{image}', [ResourceController::class, 'updateImage'])->name(
 
 // DELETE /v1/images/{image} -> elimina una imagen específica.
 Route::delete('/images/{image}', [ResourceController::class, 'destroyImage'])->name('api.images.destroy');
-
-// GET /v1/summary -> devuelve un resumen general del sistema.
-Route::get('/summary', [ResourceController::class, 'summary'])->name('api.summary'); 

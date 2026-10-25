@@ -11,11 +11,19 @@ use App\Models\Course_Teacher;
 use App\Models\Image;
 use App\Models\Teacher;
 use App\Models\Training_Center;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ResourceController extends Controller
 {
+    //Listar computadores con su imagen:
+    public function indexComputers(): JsonResponse
+    {
+        return response()->json(Computer::with('image')->get());
+    }
+    
+    //Crear computador:
     public function storeComputer(Request $request)
     {
         $validated = $request->validate([
@@ -30,23 +38,13 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    /**
-     * Devuelve todos los computadores registrados.
-     */
-    public function computers()
-    {
-        return response()->json(
-            Computer::with('image')->get()
-        );
-    }
-
-    // Devuelve un computador específico con su imagen principal.
+    // Visualizar computador con su imagen:
     public function showComputer(Computer $computer)
     {
         return response()->json($computer->load('image'));
     }
 
-    // Actualiza todos los datos de un computador existente.
+    // Actualizar computador existente:
     public function updateComputer(Request $request, Computer $computer)
     {
         $validated = $request->validate([
@@ -62,7 +60,7 @@ class ResourceController extends Controller
         ]);
     }
 
-    // Elimina un computador existente; sus aprendices conservan el registro según la FK configurada.
+    // Eliminar computador:
     public function destroyComputer(Computer $computer)
     {
         $computer->delete();
@@ -71,9 +69,14 @@ class ResourceController extends Controller
         ]);
     }
 
-    /**
-     * Crea una nueva área a partir de una petición POST.
-     */
+   
+    // Listar todas las areas:
+    public function indexAreas(): JsonResponse
+    {
+        return response()->json(Area::all());
+    }
+
+    // Crear area:
     public function storeArea(Request $request)
     {
         $validated = $request->validate([
@@ -88,23 +91,13 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    /**
-     * Devuelve todas las áreas registradas.
-     */
-    public function areas()
-    {
-        return response()->json(
-            Area::all()
-        );
-    }
-
-    // Devuelve un área específica.
+    // Visualizar área específica:
     public function showArea(Area $area)
     {
         return response()->json($area);
     }
 
-    // Actualiza el nombre de un área existente.
+    // Actualizar area existente:
     public function updateArea(Request $request, Area $area)
     {
         $validated = $request->validate([
@@ -118,7 +111,7 @@ class ResourceController extends Controller
         ]);
     }
 
-    // Elimina un área existente.
+    //Eliminar area:
     public function destroyArea(Area $area)
     {
         $area->delete();
@@ -127,9 +120,15 @@ class ResourceController extends Controller
         ]);
     }
 
-    /**
-     * Crea un nuevo curso a partir de una petición POST.
-     */
+    //Listar cursos:
+    public function indexCourses(): JsonResponse
+    {
+        return response()->json(
+            Course::with(['area', 'trainingCenter', 'teachers', 'images'])->get()
+        );
+    }
+
+    // Crear curso con su imagen:
     public function storeCourse(Request $request)
     {
         $validated = $request->validate([
@@ -146,17 +145,7 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    /**
-     * Devuelve todos los cursos con sus relaciones.
-     */
-    public function courses()
-    {
-        return response()->json(
-            Course::with(['area', 'trainingCenter', 'teachers', 'images'])->get()
-        );
-    }
-
-    // Devuelve un curso específico con sus relaciones principales.
+    // Visualizar curso:
     public function showCourse(Course $course)
     {
         return response()->json(
@@ -164,7 +153,7 @@ class ResourceController extends Controller
         );
     }
 
-    // Actualiza todos los datos de un curso existente.
+    // Actualizar curso existente:
     public function updateCourse(Request $request, Course $course)
     {
         $validated = $request->validate([
@@ -182,7 +171,7 @@ class ResourceController extends Controller
         ]);
     }
 
-    // Elimina un curso existente junto con las relaciones configuradas por la base de datos.
+    // Eliminar curso:
     public function destroyCourse(Course $course)
     {
         $course->delete();
@@ -191,9 +180,15 @@ class ResourceController extends Controller
         ]);
     }
 
-    /**
-     * Crea un nuevo instructor a partir de una petición POST.
-     */
+    // Listar instructores:
+    public function indexTeachers(): JsonResponse
+    {
+        return response()->json(
+            Teacher::with(['area', 'trainingCenter', 'courses', 'image'])->get()
+        );
+    }
+
+    // Crear instructor:
     public function storeTeacher(Request $request)
     {
         $validated = $request->validate([
@@ -211,17 +206,7 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    /**
-     * Devuelve todos los instructores con sus relaciones.
-     */
-    public function teachers()
-    {
-        return response()->json(
-            Teacher::with(['area', 'trainingCenter', 'courses', 'image'])->get()
-        );
-    }
-
-    // Devuelve un instructor específico con su área, centro e imagen.
+    // Visualizar instructor:
     public function showTeacher(Teacher $teacher)
     {
         return response()->json(
@@ -229,7 +214,7 @@ class ResourceController extends Controller
         );
     }
 
-    // Actualiza los datos de un instructor sin invalidar su propio correo.
+    // Actualizar instructor:
     public function updateTeacher(Request $request, Teacher $teacher)
     {
         $validated = $request->validate([
@@ -244,14 +229,13 @@ class ResourceController extends Controller
         ]);
 
         $teacher->update($validated);
-
         return response()->json([
             'message' => 'Instructor actualizado correctamente.',
             'data' => $teacher->load(['area', 'trainingCenter', 'courses', 'image']),
         ]);
     }
 
-    // Elimina un instructor existente junto con sus asignaciones relacionadas.
+    // Eliminar instructor:
     public function destroyTeacher(Teacher $teacher)
     {
         $teacher->delete();
@@ -260,9 +244,15 @@ class ResourceController extends Controller
         ]);
     }
 
-    /**
-     * Crea un nuevo aprendiz a partir de una petición POST.
-     */
+    // Listar aprendices con imagen:
+    public function indexApprentices(): JsonResponse
+    {
+        return response()->json(
+            Apprentice::with(['course', 'computer', 'image'])->get()
+        );
+    }
+
+    // Crear aprendiz:
     public function storeApprentice(Request $request)
     {
         $validated = $request->validate([
@@ -281,17 +271,7 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    /**
-     * Devuelve todos los aprendices con sus relaciones.
-     */
-    public function apprentices()
-    {
-        return response()->json(
-            Apprentice::with(['course', 'computer', 'image'])->get()
-        );
-    }
-
-    // Devuelve un aprendiz específico con su curso, computador e imagen.
+    // Visualizar aprendiz:
     public function showApprentice(Apprentice $apprentice)
     {
         return response()->json(
@@ -299,7 +279,7 @@ class ResourceController extends Controller
         );
     }
 
-    // Actualiza los datos de un aprendiz sin invalidar su propio correo.
+    // Actualizar aprendiz:
     public function updateApprentice(Request $request, Apprentice $apprentice)
     {
         $validated = $request->validate([
@@ -321,7 +301,7 @@ class ResourceController extends Controller
         ]);
     }
 
-    // Elimina un aprendiz existente.
+    // Eliminar aprendiz:
     public function destroyApprentice(Apprentice $apprentice)
     {
         $apprentice->delete();
@@ -330,9 +310,13 @@ class ResourceController extends Controller
         ]);
     }
 
-    /**
-     * Crea un nuevo centro de formación a partir de una petición POST.
-     */
+    // Listar centros de formación con su imagen:
+    public function indexTrainingCenters(): JsonResponse
+    {
+        return response()->json(Training_Center::with('image')->get());
+    }
+
+    // Crear centro de formación:
     public function storeTrainingCenter(Request $request)
     {
         $validated = $request->validate([
@@ -347,23 +331,13 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    /**
-     * Devuelve todos los centros de formación con sus relaciones.
-     */
-    public function trainingCenters()
-    {
-        return response()->json(
-            Training_Center::with('image')->get()
-        );
-    }
-
-    // Devuelve un centro de formación específico con su imagen principal.
+    // Visualizar centro de formación:
     public function showTrainingCenter(Training_Center $trainingCenter)
     {
         return response()->json($trainingCenter->load('image'));
     }
 
-    // Actualiza los datos de un centro de formación existente.
+    // Actualizar centro de formación existente:
     public function updateTrainingCenter(Request $request, Training_Center $trainingCenter)
     {
         $validated = $request->validate([
@@ -378,7 +352,7 @@ class ResourceController extends Controller
         ]);
     }
 
-    // Elimina un centro de formación existente.
+    // Eliminar centro de formación:
     public function destroyTrainingCenter(Training_Center $trainingCenter)
     {
         $trainingCenter->delete();
@@ -387,15 +361,15 @@ class ResourceController extends Controller
         ]);
     }
 
-    // Devuelve todas las asignaciones entre cursos e instructores.
-    public function courseTeachers()
+    // Listar asignaciones curso-instructor: 
+    public function indexCourseTeachers(): JsonResponse
     {
         return response()->json(
             Course_Teacher::with(['course', 'teacher'])->get()
         );
     }
 
-    // Crea una asignación entre un curso y un instructor existentes.
+    // Crear asignación curso-instructor:
     public function storeCourseTeacher(Request $request)
     {
         $validated = $request->validate([
@@ -417,7 +391,7 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    // Devuelve una asignación curso-instructor específica.
+    // Visualizar asignación curso-instructor:
     public function showCourseTeacher(Course_Teacher $courseTeacher)
     {
         return response()->json(
@@ -425,7 +399,7 @@ class ResourceController extends Controller
         );
     }
 
-    // Actualiza una asignación curso-instructor existente.
+    // Actualizar asignación curso-instructor existente:
     public function updateCourseTeacher(Request $request, Course_Teacher $courseTeacher)
     {
         $validated = $request->validate([
@@ -441,30 +415,28 @@ class ResourceController extends Controller
         ]);
 
         $courseTeacher->update($validated);
-
         return response()->json([
             'message' => 'Asignación actualizada correctamente.',
             'data' => $courseTeacher->load(['course', 'teacher']),
         ]);
     }
 
-    // Elimina una asignación curso-instructor existente.
+    // Eliminar asignación curso-instructor:
     public function destroyCourseTeacher(Course_Teacher $courseTeacher)
     {
         $courseTeacher->delete();
-
         return response()->json([
             'message' => 'Asignación eliminada correctamente.',
         ]);
     }
 
-    // Devuelve los metadatos registrados de todas las imágenes.
-    public function images()
+    // Listar imágenes:
+    public function indexImages(): JsonResponse
     {
         return response()->json(Image::all());
     }
 
-    // Registra los metadatos de una imagen almacenada previamente.
+    // Crear imagen:
     public function storeImage(Request $request)
     {
         $validated = $this->validateImageOwner($request) + $request->validate([
@@ -483,13 +455,13 @@ class ResourceController extends Controller
         ], 201);
     }
 
-    // Devuelve los metadatos de una imagen específica.
+    // Visualizar imagen:
     public function showImage(Image $image)
     {
         return response()->json($image);
     }
 
-    // Actualiza los metadatos de una imagen existente.
+    // Actualizar imagen existente:
     public function updateImage(Request $request, Image $image)
     {
         $validated = $this->validateImageOwner($request) + $request->validate([
@@ -508,7 +480,7 @@ class ResourceController extends Controller
         ]);
     }
 
-    // Elimina el registro de una imagen; no borra automáticamente el archivo físico.
+    // Eliminar registro de imagen:
     public function destroyImage(Image $image)
     {
         $image->delete();
@@ -518,9 +490,7 @@ class ResourceController extends Controller
         ]);
     }
 
-    /**
-     * Valida el tipo de entidad de la imagen y que su registro exista.
-     */
+    // Validar que la imagen perternezca a la entidad correspondiente:
     private function validateImageOwner(Request $request): array
     {
         $imageableTables = [
@@ -531,12 +501,12 @@ class ResourceController extends Controller
             Training_Center::class => 'training__centers',
         ];
 
-        // Acepta únicamente los modelos incluidos en el mapa de entidades con imágenes.
+        // Valida que el tipo de entidad sea uno de los permitidos:
         $owner = $request->validate([
             'imageable_type' => ['required', 'string', Rule::in(array_keys($imageableTables))],
         ]);
 
-        // Comprueba que el ID exista en la tabla correspondiente al modelo validado.
+        // Comprueba que el ID exista en la tabla correspondiente al modelo validado:
         return $owner + $request->validate([
             'imageable_id' => [
                 'required',

@@ -28,7 +28,7 @@ class ResourceController extends Controller
     {
         $validated = $request->validate([
             'number' => 'required|integer',
-            'brand' => 'required|integer',
+            'brand' => 'required|string',
         ]);
 
         $computer = Computer::create($validated);
@@ -49,7 +49,7 @@ class ResourceController extends Controller
     {
         $validated = $request->validate([
             'number' => 'required|integer',
-            'brand' => 'required|integer',
+            'brand' => 'required|string',
         ]);
 
         $computer->update($validated);
@@ -69,7 +69,6 @@ class ResourceController extends Controller
         ]);
     }
 
-   
     // Listar todas las areas:
     public function indexAreas(): JsonResponse
     {
@@ -439,18 +438,44 @@ class ResourceController extends Controller
     // Crear imagen:
     public function storeImage(Request $request)
     {
-        $validated = $this->validateImageOwner($request) + $request->validate([
-            'path' => 'required|string',
-            'file_name' => 'required|string',
-            'original_name' => 'nullable|string',
+        // Valida que la entidad asociada exista y esté permitida.
+        $imageable = $this->validateImageOwner($request);
+
+        // Valida el archivo y los metadatos opcionales.
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
             'alt_text' => 'nullable|string',
             'is_primary' => 'nullable|boolean',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
-        $image = Image::create($validated);
+        // Guarda el archivo en storage/app/public/images.
+        $file = $request->file('image');
+        $path = $file->store('images', 'public');
+
+        // Informa si Laravel no pudo guardar el archivo.
+        if (!$path) {
+            return response()->json([
+                'message' => 'No se pudo guardar la imagen.',
+            ], 500);
+        }
+
+        // Obtiene el nombre original del archivo subido.
+        $originalName = $file->getClientOriginalName();
+
+        // Guarda la ruta y los metadatos en la tabla images.
+        $image = Image::create($imageable + [
+            'path' => $path,
+            'file_name' => basename($path),
+            'original_name' => $originalName,
+            'alt_text' => $validated['alt_text'] ?? null,
+            'is_primary' => $validated['is_primary'] ?? false,
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
+
+        // Devuelve el registro creado con código HTTP 201.
         return response()->json([
-            'message' => 'Imagen registrada correctamente.',
+            'message' => 'Imagen guardada correctamente.',
             'data' => $image,
         ], 201);
     }

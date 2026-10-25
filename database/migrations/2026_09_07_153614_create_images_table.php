@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Ejecuta la migración para registrar imágenes reutilizables
-     * en cualquier entidad que las necesite (cursos, instructores, centros, etc.).
-     */
+        //
+    // Ejecuta la migración para registrar imágenes reutilizables
+    // en cualquier entidad que las necesite (cursos, instructores, centros, etc.).
+    //
     public function up(): void
     {
         Schema::create('images', function (Blueprint $table) {
@@ -37,9 +37,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Revierte la migración si se elimina la funcionalidad de imágenes.
-     */
+        //
+    // Revierte la migración si se elimina la funcionalidad de imágenes.
+    //
     public function down(): void
     {
         Schema::dropIfExists('images');

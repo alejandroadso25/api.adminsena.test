@@ -41,9 +41,9 @@ class Course extends Model
         return $this->belongsToMany(Teacher::class, 'course__teachers');
     }
 
-    /**
-     * Un curso puede tener varias imágenes asociadas.
-     */
+        //
+    // Un curso puede tener varias imágenes asociadas.
+    //
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');

@@ -23,9 +23,9 @@ class Apprentice extends Model
         return $this->belongsTo(Computer::class);
     }
 
-    /**
-     * Imagen principal del aprendiz para mostrarla en sus vistas administrativas.
-     */
+        //
+    // Imagen principal del aprendiz para mostrarla en sus vistas administrativas.
+    //
     public function image()
     {
         return $this->morphOne(Image::class, 'imageable')->where('is_primary', true);

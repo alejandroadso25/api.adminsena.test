@@ -27,9 +27,7 @@ class Image extends Model
         'sort_order' => 'integer',
     ];
 
-    /**
-     * Permite que la imagen pertenezca a cualquier entidad del sistema.
-     */
+    // Permite que la imagen pertenezca a cualquier entidad del sistema.
     public function imageable()
     {
         return $this->morphTo();

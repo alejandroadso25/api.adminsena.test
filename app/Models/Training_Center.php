@@ -36,17 +36,17 @@ class Training_Center extends Model
         return $this->hasMany(Teacher::class);
     }
 
-    /**
-     * Un centro de formación puede tener imágenes asociadas.
-     */
+        //
+    // Un centro de formación puede tener imágenes asociadas.
+    //
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');
     }
 
-    /**
-     * Imagen principal del centro de formación para mostrarla en el CRUD.
-     */
+        //
+    // Imagen principal del centro de formación para mostrarla en el CRUD.
+    //
     public function image()
     {
         return $this->morphOne(Image::class, 'imageable')->where('is_primary', true);

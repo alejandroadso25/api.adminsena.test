@@ -19,9 +19,9 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const HOME = '/home';
 
-    /**
-     * Define your route model bindings, pattern filters, and other route configuration.
-     */
+        //
+    // Define your route model bindings, pattern filters, and other route configuration.
+    //
     public function boot(): void
     {
         // Limita la API a 60 solicitudes por minuto por usuario autenticado o dirección IP.

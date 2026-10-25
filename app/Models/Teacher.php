@@ -35,17 +35,17 @@ class Teacher extends Model
         return $this->belongsToMany(Course::class, 'course__teachers');
     }
 
-    /**
-     * Un instructor puede tener varias imágenes de perfil o galerías.
-     */
+        //
+    // Un instructor puede tener varias imágenes de perfil o galerías.
+    //
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');
     }
 
-    /**
-     * Imagen principal del instructor para mostrarla en el CRUD.
-     */
+        //
+    // Imagen principal del instructor para mostrarla en el CRUD.
+    //
     public function image()
     {
         return $this->morphOne(Image::class, 'imageable')->where('is_primary', true);

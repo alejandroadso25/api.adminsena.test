@@ -21,9 +21,9 @@ class Computer extends Model
         return $this->hasMany(Apprentice::class);
     }
 
-    /**
-     * Imagen principal asociada al computador mediante la relación polimórfica.
-     */
+        //
+    // Imagen principal asociada al computador mediante la relación polimórfica.
+    //
     public function image()
     {
         return $this->morphOne(Image::class, 'imageable')->where('is_primary', true);

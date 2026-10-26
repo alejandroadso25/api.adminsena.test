@@ -11,9 +11,11 @@ use App\Models\Course_Teacher;
 use App\Models\Image;
 use App\Models\Teacher;
 use App\Models\Training_Center;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+
 
 class ResourceController extends Controller
 {
@@ -36,6 +38,8 @@ class ResourceController extends Controller
             'message' => 'Computador creado correctamente.',
             'data' => $computer,
         ], 201);
+         
+       
     }
 
     // Visualizar computador con su imagen:
@@ -439,9 +443,9 @@ class ResourceController extends Controller
     public function storeImage(Request $request)
     {
         // Valida que la entidad asociada exista y esté permitida.
-        $imageable = $this->validateImageOwner($request);
+        $imageable = $this->validateImage($request);
 
-        // Valida el archivo y los metadatos opcionales.
+        // Valida el archivo de imagen y los metadatos opcionales.
         $validated = $request->validate([
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
             'alt_text' => 'nullable|string',
@@ -449,30 +453,29 @@ class ResourceController extends Controller
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
-        // Guarda el archivo en storage/app/public/images.
         $file = $request->file('image');
-        $path = $file->store('images', 'public');
+        $cloudinary = new Cloudinary([
+            'cloud' => [
+                'cloud_name' => config('services.cloudinary.cloud_name'),
+                'api_key' => config('services.cloudinary.api_key'),
+                'api_secret' => config('services.cloudinary.api_secret'),
+            ],
+            'url' => ['secure' => true],
+        ]);
 
-        // Informa si Laravel no pudo guardar el archivo.
-        if (!$path) {
-            return response()->json([
-                'message' => 'No se pudo guardar la imagen.',
-            ], 500);
-        }
+        $resultado = $cloudinary->uploadApi()->upload(
+            $file->getRealPath(),
+            [
+                'folder' => 'images',
+                'resource_type' => 'image',
+            ]
+        );
 
-        $isPrimary = $validated['is_primary'] ?? false;
-        if ($isPrimary) {
-            // Al reemplazar la imagen principal, evita que queden dos para el mismo registro.
-            Image::where('imageable_type', $imageable['imageable_type'])
-                ->where('imageable_id', $imageable['imageable_id'])
-                ->where('is_primary', true)
-                ->update(['is_primary' => false]);
-        }
-
-        // Obtiene el nombre original del archivo subido.
+        $path = $resultado['secure_url'];
         $originalName = $file->getClientOriginalName();
+        $isPrimary = $validated['is_primary'] ?? false;
 
-        // Guarda la ruta y los metadatos en la tabla images.
+        // Guarda la URL de Cloudinary y los metadatos.
         $image = Image::create($imageable + [
             'path' => $path,
             'file_name' => basename($path),
@@ -498,7 +501,7 @@ class ResourceController extends Controller
     // Actualizar imagen existente:
     public function updateImage(Request $request, Image $image)
     {
-        $validated = $this->validateImageOwner($request) + $request->validate([
+        $validated = $this->validateImage($request) + $request->validate([
             'path' => 'required|string',
             'file_name' => 'required|string',
             'original_name' => 'nullable|string',
@@ -525,7 +528,7 @@ class ResourceController extends Controller
     }
 
     // Validar que la imagen perternezca a la entidad correspondiente:
-    private function validateImageOwner(Request $request): array
+    private function validateImage(Request $request): array
     {
         $imageableTables = [
             Computer::class => 'computers',
@@ -536,16 +539,16 @@ class ResourceController extends Controller
         ];
 
         // Valida que el tipo de entidad sea uno de los permitidos:
-        $owner = $request->validate([
+        $imageable = $request->validate([
             'imageable_type' => ['required', 'string', Rule::in(array_keys($imageableTables))],
         ]);
 
         // Comprueba que el ID exista en la tabla correspondiente al modelo validado:
-        return $owner + $request->validate([
+        return $imageable + $request->validate([
             'imageable_id' => [
                 'required',
                 'integer',
-                Rule::exists($imageableTables[$owner['imageable_type']], 'id'),
+                Rule::exists($imageableTables[$imageable['imageable_type']], 'id'),
             ],
         ]);
     }

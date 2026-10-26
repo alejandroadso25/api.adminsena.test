@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Configuración usada por el SDK para autenticar las subidas desde el backend.
+    'cloudinary' => [
+        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'), // Identifica la cuenta de Cloudinary.
+        'api_key' => env('CLOUDINARY_API_KEY'), // Clave pública de la API.
+        'api_secret' => env('CLOUDINARY_API_SECRET'), // Secreto privado; no exponerlo al cliente.
+    ],
+
 ];

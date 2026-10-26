@@ -460,6 +460,15 @@ class ResourceController extends Controller
             ], 500);
         }
 
+        $isPrimary = $validated['is_primary'] ?? false;
+        if ($isPrimary) {
+            // Al reemplazar la imagen principal, evita que queden dos para el mismo registro.
+            Image::where('imageable_type', $imageable['imageable_type'])
+                ->where('imageable_id', $imageable['imageable_id'])
+                ->where('is_primary', true)
+                ->update(['is_primary' => false]);
+        }
+
         // Obtiene el nombre original del archivo subido.
         $originalName = $file->getClientOriginalName();
 
@@ -469,7 +478,7 @@ class ResourceController extends Controller
             'file_name' => basename($path),
             'original_name' => $originalName,
             'alt_text' => $validated['alt_text'] ?? null,
-            'is_primary' => $validated['is_primary'] ?? false,
+            'is_primary' => $isPrimary,
             'sort_order' => $validated['sort_order'] ?? 0,
         ]);
 
